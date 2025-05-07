@@ -19,7 +19,7 @@ export const movieDetailSchema = z.object({
   original_language: z.string().nullable(),
   original_title: z.string().nullable(),
   overview: z.string().nullable(),
-  popularity: z.number().nullable(),
+  popularity: z.number(),
   poster_path: z.string().nullable(),
   production_companies: z
     .array(
@@ -53,9 +53,9 @@ export const movieDetailSchema = z.object({
   ),
   status: z.string().nullable(),
   tagline: z.string().nullable(),
-  title: z.string().nullable(),
+  title: z.string(),
   video: z.boolean().nullable(),
-  vote_average: z.number().nullable(),
+  vote_average: z.number(),
   vote_count: z.number().nullable(),
 });
 
