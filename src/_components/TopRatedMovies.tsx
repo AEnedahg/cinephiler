@@ -54,7 +54,7 @@ function TopRatedMovies() {
               <img
                 src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                 alt={movie.title}
-                className="lg:rounded-lg lg:w-full lg:h-auto object-cover"
+                className="lg:rounded-lg lg:w-full lg:h-auto object-cover group-hover:opacity-80 transition-opacity"
                 width={145}
                 height={160}
               />
