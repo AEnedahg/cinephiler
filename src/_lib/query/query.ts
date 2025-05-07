@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { topRatedApi, upcomingAPI, popularApi, searchMultiApi, movieDetailsApi } from "../api/api";
-import { Movie, Person } from "../schema/combinedSearch";
+import { topRatedApi, upcomingAPI, popularApi, searchCombinedApi, movieDetailsApi, personDetailsApi } from "../api/api";
+import { Movie, Person} from "../schema/combinedSearch";
+
+export type CombinedSearchData = {
+  movies: Movie[];
+  people: Person[];
+};
 
 interface UpcomingMovieAPIResponse {
   results: {
@@ -26,23 +31,6 @@ interface PopularMovieAPIResponse {
   }[];
 }
 
-type CombinedSearchData = {
-  movies: {
-    results: Movie[];
-    page: number;
-    total_pages: number;
-    total_results: number;
-  };
-  people: {
-    results: Person[];
-    page: number;
-    total_pages: number;
-    total_results: number;
-  };
-};
-
-
-
 export const upcomingQueryFunc = () => {
   return useQuery<UpcomingMovieAPIResponse>({
     queryKey: ["upcomingMovies"],
@@ -67,10 +55,12 @@ export const popularQueryFunc = () => {
   })
 }
 
+
+
 export const combinedSearchQueryFunc = (search: string) => {
   return useQuery<CombinedSearchData>({
-    queryKey: ["multi-search", search],
-    queryFn: () => searchMultiApi(search),
+    queryKey: ["combined-search", search],
+    queryFn: () => searchCombinedApi(search),
     enabled: !!search,
   });
 };
@@ -80,4 +70,11 @@ export const movieDetailsQuery = (movieId: number) =>
     queryKey: ["movie-details", movieId],
     queryFn: () => movieDetailsApi(movieId),
     enabled: !!movieId,
+  });
+
+export const personDetailsQuery = (personId: number) =>
+  useQuery({
+    queryKey: ["person-details", personId],
+    queryFn: () => personDetailsApi(personId),
+    enabled: !!personId,
   });

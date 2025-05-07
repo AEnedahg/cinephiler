@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
@@ -8,13 +8,17 @@ export default function SearchBar() {
   const [search, setSearch] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (search.trim()) {
       router.push(`/search?query=${encodeURIComponent(search.trim())}`);
+      setIsFocused(false);
+      inputRef.current?.blur();
     }
   };
+
 
   return (
     <>
@@ -32,11 +36,10 @@ export default function SearchBar() {
         <div className="flex items-center w-full rounded-lg border border-gray-300 bg-gray-50 dark:bg-gray-900 px-3.5 py-2">
           <SearchIcon className="h-4 w-4 text-gray-400" />
           <Input
+            ref={inputRef}
             type="search"
             placeholder="Search"
-            className="w-full border-0 h-8 font-semibold bg-transparent focus:outline-none
-            text-black
-            "
+            className="w-full border-0 h-8 font-semibold bg-transparent focus:outline-none text-black"
             value={search}
             onFocus={() => setIsFocused(true)}
             onChange={(e) => setSearch(e.target.value)}

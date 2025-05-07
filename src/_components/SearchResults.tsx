@@ -1,12 +1,27 @@
-"use client";
+"use client"
 import React from "react";
 import { useDebounce } from "@/hooks/debounce";
 import { combinedSearchQueryFunc } from "@/_lib/query/query";
-import { Movie, Person } from '@/_lib/schema/combinedSearch';
+import { Movie, Person } from "@/_lib/schema/combinedSearch";
+import Link from 'next/link';
+import { useRouter } from "next/navigation";
+
+export type CombinedSearchData = {
+  movies: Movie[];
+  people: Person[];
+};
+
+
 export default function SearchResults({ search }: { search: string }) {
   const debouncedSearch = useDebounce(search, 500);
+  const router = useRouter()
   const { data, isLoading, error } = combinedSearchQueryFunc(debouncedSearch);
-
+  const handleMovieClick = (movieId: number) => {
+    router.push(`/movies/${movieId}`);
+  };
+  const handlePersonClick = (personId: number) => {
+    router.push(`/persons/${personId}`)
+  }
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4 lg:px-40 px-4">
@@ -19,18 +34,28 @@ export default function SearchResults({ search }: { search: string }) {
       </div>
     );
   }
-  if (error)
-    return <p className="text-red-500">Failed to load top rated movies.</p>;
+
+  if (error) {
+    console.error("Search error:", error);
+    return <p className="text-red-500">Failed to load search results.</p>;
+  }
 
   return (
     <div className="space-y-8 lg:px-40 px-4">
       <section>
         <h2 className="text-xl font-bold mb-4">Movies</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {data?.movies.results
+          {data?.movies
             .filter((movie) => movie.poster_path)
             .map((movie) => (
-              <MovieCard key={`movie-${movie.id}`} movie={movie} />
+              <Link
+                href={`/movies/${movie.id}`}
+                key={movie.id}
+                className="min-w-[150px] md:min-w-0 flex-shrink-0 md:flex-shrink md:w-auto cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => handleMovieClick}
+              >
+                <MovieCard movie={movie} />
+              </Link>
             ))}
         </div>
       </section>
@@ -38,24 +63,28 @@ export default function SearchResults({ search }: { search: string }) {
       <section>
         <h2 className="text-xl font-bold mb-4">Actors</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {data?.people.results
+          {data?.people
             .filter((person) => person.profile_path)
             .map((person) => (
-              <PersonCard key={`person-${person.id}`} person={person} />
+              <Link
+                href={`/persons/${person.id}`}
+                key={person.id}
+                className="min-w-[150px] md:min-w-0 flex-shrink-0 md:flex-shrink md:w-auto cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => handlePersonClick}
+              >
+                <PersonCard key={`person-${person.id}`} person={person} />
+              </Link>
             ))}
         </div>
       </section>
 
-      {/* No Results */}
-      {data?.movies.results.length === 0 &&
-        data?.people.results.length === 0 && (
-          <div className="text-center py-10">No results found</div>
-        )}
+      {data?.movies.length === 0 && data?.people.length === 0 && (
+        <div className="text-center py-10">No results found</div>
+      )}
     </div>
   );
 }
 
-// Helper components
 const MovieCard = ({ movie }: { movie: Movie }) => (
   <div>
     <img

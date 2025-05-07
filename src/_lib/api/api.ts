@@ -2,8 +2,9 @@ import axios from "axios";
 import { upcomingSchema } from "../schema/upcoming";
 import { topRatedSchema } from "../schema/topRated";
 import { popularSchema } from "../schema/popular";
-import { MultiSearchAPIResponseSchema, Movie, Person } from "../schema/combinedSearch";
+import { movieSchema, personSchema } from "../schema/combinedSearch";
 import { movieDetailSchema } from "../schema/movieDetails";
+import { personDetailSchema } from "../schema/personDetails";
 
 const BASE_URL = "https://api.themoviedb.org/3";
 
@@ -94,45 +95,50 @@ export const popularApi = async (popularMovie:string) => {
   }
 }
 
-export const searchMultiApi = async (query: string) => {
-  const response = await axios.get(`${BASE_URL}/search/multi`, {
-    params: {
-      api_key: API_KEY,
-      query,
-      include_adult: false,
-      language: "en-US",
-      page: 1,
-    },
-  });
+export const searchCombinedApi = async (query: string) => {
+  const [movieRes, personRes] = await Promise.all([
+    axios.get(`${BASE_URL}/search/movie`, {
+      params: {
+        api_key: API_KEY,
+        query,
+        language: "en-US",
+        include_adult: false,
+        page: 1,
+      },
+    }),
+    axios.get(`${BASE_URL}/search/person`, {
+      params: {
+        api_key: API_KEY,
+        query,
+        language: "en-US",
+        include_adult: false,
+        page: 1,
+      },
+    }),
+  ]);
 
-  // Parse with Zod
-  const parsed = MultiSearchAPIResponseSchema.parse(response.data);
+  try {
+    const parsedMovies = movieSchema.parse(movieRes.data);
+    const parsedPeople = personSchema.parse(personRes.data);
 
-  // Filter movies and people
-  const movies = parsed.results.filter(
-    (result): result is Movie => result.media_type === "movie"
-  );
+    const filteredMovies = parsedMovies.results.filter((movie) =>
+      movie.title.toLowerCase().includes(query.toLowerCase())
+    );
 
-  const people = parsed.results.filter(
-    (result): result is Person => result.media_type === "person"
-  );
+    const filteredPeople = parsedPeople.results.filter((person) =>
+      person.name.toLowerCase().includes(query.toLowerCase())
+    );
 
-  // Return in separate paginated blocks
-  return {
-    movies: {
-      results: movies,
-      page: parsed.page,
-      total_pages: parsed.total_pages,
-      total_results: parsed.total_results,
-    },
-    people: {
-      results: people,
-      page: parsed.page,
-      total_pages: parsed.total_pages,
-      total_results: parsed.total_results,
-    },
-  };
+    return {
+      movies: filteredMovies,
+      people: filteredPeople,
+    };
+  } catch (error) {
+    console.error("Zod parsing error in searchCombinedApi:", error);
+    throw error;
+  }
 };
+
 
 export const movieDetailsApi = async (movieId: number) => {
   try {
@@ -144,6 +150,23 @@ export const movieDetailsApi = async (movieId: number) => {
     });
 
     const parsed = movieDetailSchema.parse(response.data);
+    return parsed;
+  } catch (error) {
+    console.error("Failed to fetch movie details:", error);
+    throw error;
+  }
+};
+
+export const personDetailsApi = async (personId: number) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/person/${personId}`, {
+      params: {
+        api_key: API_KEY,
+        language: "en-US",
+      },
+    });
+
+    const parsed = personDetailSchema.parse(response.data);
     return parsed;
   } catch (error) {
     console.error("Failed to fetch movie details:", error);
