@@ -3,7 +3,7 @@ import { z } from "zod";
 export const movieDetailSchema = z.object({
   adult: z.boolean(),
   backdrop_path: z.string(),
-  belongs_to_collection: z.string().nullable(),
+  belongs_to_collection: z.object({}),
   budget: z.number(),
   genres: z.array(
     z.object({
@@ -22,7 +22,7 @@ export const movieDetailSchema = z.object({
   production_companies: z.array(
     z.object({
       id: z.number(),
-      logo_path: z.string(),
+      logo_path: z.string().nullable(),
       name: z.string(),
       origin_country: z.string(),
     })
