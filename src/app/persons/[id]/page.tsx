@@ -98,7 +98,6 @@ export default function PersonDetailsPage() {
           )}
         </div>
 
-        {/* Removed the "Known For" section since we don't have that data */}
       </div>
     </div>
   );
