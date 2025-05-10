@@ -1,3 +1,4 @@
+"use client"
 import UpcomingMovies from "@/_components/UpcomingMovies";
 import TopRatedMovies from "@/_components/TopRatedMovies";
 import PopularMovies from "@/_components/PopularMovies";
