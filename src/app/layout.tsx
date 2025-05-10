@@ -53,7 +53,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-screen flex flex-col">
-        <ClerkProvider>
+        <ClerkProvider
+          publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+        >
           <QueryProvider>
             <div className="max-w-[1440px] mx-auto flex-1 flex flex-col w-full">
               <Nav />
