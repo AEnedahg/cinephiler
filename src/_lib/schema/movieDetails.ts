@@ -21,6 +21,7 @@ export const movieDetailSchema = z.object({
   overview: z.string().nullable(),
   popularity: z.number(),
   poster_path: z.string().nullable(),
+  genre_ids: z.array(z.number()).optional(),
   production_companies: z
     .array(
       z.object({

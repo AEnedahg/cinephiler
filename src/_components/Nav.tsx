@@ -9,6 +9,13 @@ import { IoClose } from "react-icons/io5";
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Search from './Search';
+import {
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 const NAVITEMS = [
   {
@@ -48,7 +55,7 @@ function Nav() {
               animate={{ width: "66%" }}
               transition={{ duration: 0.5 }}
               exit={{ width: 0 }}
-              className="absolute w-2/3 top-0 left-0 z-10 bg-[#001C29] pt-10 px-10
+              className="absolute w-2/3 top-0 left-0 z-100 bg-[#001C29] pt-10 px-10
             flex flex-col gap-y-5 h-screen
           "
             >
@@ -61,30 +68,29 @@ function Nav() {
                   Close
                 </small>
               </div>
-              {NAVITEMS.map((navitem) => {
-                return (
-                  <div
-                    key={navitem.id}
-                    className={`flex gap-x-5 ${
-                      navitem.id === 6 ? "mt-8" : "mt-0"
-                    }`}
-                  >
-                    <navitem.img className="text-white text-3xl" />
-                    <small className="text-lg text-white font-semibold">
-                      {navitem.text}
-                    </small>
-                  </div>
-                );
-              })}
+              <div className="*:text-white *:text-lg flex flex-col font-semibold">
+                <SignedOut>
+                  <SignInButton />
+                  <SignUpButton />
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </div>
             </motion.nav>
           )}
         </AnimatePresence>
         <nav className="hidden lg:flex w-3/4 justify-between items-center *:text-white *:font-semibold">
-          <div className="w-4/5">
+          <div className="w-4/5 z-10">
             <Search />
           </div>
-          <Link href="/login">Login</Link>
-          <Link href="/logout">Logout</Link>
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </nav>
       </header>
       <div className="lg:hidden w-full bg-[#002335] px-4 pb-4">

@@ -3,7 +3,7 @@ import "./globals.css";
 import Nav from "@/_components/Nav";
 import QueryProvider from "@/_lib/react-query/QueryProvider";
 import Footer from "@/_components/Footer";
-
+import { ClerkProvider } from "@clerk/nextjs";
 export const metadata: Metadata = {
   title: "Cinephiler | Honest Movie Reviews & Ratings",
   description:
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "https://www.cinephiler.com/og-image.jpg", // Replace with your actual image URL
+        url: "https://www.cinephiler.com/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "Cinephiler - Honest Movie Reviews",
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Cinephiler",
     description: "Your destination for honest movie reviews and film ratings.",
-    images: ["https://cinephiler.vercel.app/og-image.jpg"], // Replace with actual image
+    images: ["https://cinephiler.vercel.app/og-image.jpg"],
   },
   metadataBase: new URL("https://www.cinephiler.com"),
 };
@@ -53,13 +53,15 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="min-h-screen flex flex-col">
-        <QueryProvider>
-          <div className="max-w-[1440px] mx-auto flex-1 flex flex-col w-full">
-            <Nav />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </QueryProvider>
+        <ClerkProvider>
+          <QueryProvider>
+            <div className="max-w-[1440px] mx-auto flex-1 flex flex-col w-full">
+              <Nav />
+              <main className="flex-1">{children}</main>
+              <Footer />
+            </div>
+          </QueryProvider>
+        </ClerkProvider>
       </body>
     </html>
   );
